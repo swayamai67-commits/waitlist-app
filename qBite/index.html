@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="QBite — walk-in waitlist management for restaurants.">
+  <title>QBite · Restaurant Waitlist</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Ctext x='16' y='22' font-family='Arial,sans-serif' font-size='18' font-weight='700' fill='white' text-anchor='middle'%3EQ%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main" id="skip-link">Skip to main content</a>
+
+  <!-- ============ Staff app ============ -->
+  <div class="app" id="staff-app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span class="brand-name">QBite</span>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <a class="nav-link" href="#dashboard" data-route="dashboard">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 13h6V4H4zm0 7h6v-5H4zm10 0h6v-9h-6zm0-16v5h6V4z"/></svg>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a class="nav-link" href="#waitlist" data-route="waitlist">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          <span class="nav-label">Waitlist</span>
+          <span class="nav-badge" id="nav-waitlist-badge" hidden></span>
+        </a>
+        <a class="nav-link" href="#history" data-route="history">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
+          <span class="nav-label">History</span>
+        </a>
+        <a class="nav-link" href="#customer" data-route="customer">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 17h2"/></svg>
+          <span class="nav-label">Customer View</span>
+        </a>
+        <a class="nav-link" href="#settings" data-route="settings">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <span class="sidebar-restaurant" id="sidebar-restaurant"></span>
+        <span class="sidebar-date" id="sidebar-date"></span>
+      </div>
+    </aside>
+
+    <main class="main" id="main" tabindex="-1">
+      <div class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">Q</span>
+          <span class="brand-name">QBite</span>
+        </div>
+        <span class="topbar-restaurant" id="topbar-restaurant"></span>
+      </div>
+      <div class="banner" id="storage-banner" role="alert" hidden>
+        Browser storage is unavailable (for example in some private windows). QBite still works, but data will be lost when this tab is closed.
+      </div>
+
+      <!-- Dashboard -->
+      <section class="view" id="view-dashboard" data-view="dashboard" aria-labelledby="dashboard-title" hidden>
+        <header class="page-header">
+          <div>
+            <h1 class="page-title" id="dashboard-title" tabindex="-1">Dashboard</h1>
+            <p class="page-subtitle" id="dashboard-date"></p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-secondary" data-action="open-add">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              Add customer
+            </button>
+          </div>
+        </header>
+
+        <div class="stats" role="list" aria-label="Today's statistics">
+          <div class="stat" role="listitem">
+            <span class="stat-label">Waiting</span>
+            <span class="stat-value" id="stat-waiting">0</span>
+            <span class="stat-note" id="stat-waiting-note"></span>
+          </div>
+          <div class="stat" role="listitem">
+            <span class="stat-label">Called</span>
+            <span class="stat-value" id="stat-called">0</span>
+            <span class="stat-note">Ready to be seated</span>
+          </div>
+          <div class="stat" role="listitem">
+            <span class="stat-label">Seated</span>
+            <span class="stat-value" id="stat-seated">0</span>
+            <span class="stat-note">Today</span>
+          </div>
+          <div class="stat" role="listitem">
+            <span class="stat-label">Total today</span>
+            <span class="stat-value" id="stat-total">0</span>
+            <span class="stat-note" id="stat-total-note"></span>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <section class="card next-card" aria-labelledby="next-title">
+            <h2 class="card-title" id="next-title">Next up</h2>
+            <div id="next-up"></div>
+          </section>
+
+          <section class="card" aria-labelledby="called-title">
+            <div class="card-head">
+              <h2 class="card-title" id="called-title">Called · ready to seat</h2>
+            </div>
+            <div id="dash-called"></div>
+          </section>
+
+          <section class="card dash-queue" aria-labelledby="queue-preview-title">
+            <div class="card-head">
+              <h2 class="card-title" id="queue-preview-title">Waiting queue</h2>
+              <a class="link" href="#waitlist">Open waitlist</a>
+            </div>
+            <div id="dash-waiting"></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- Waitlist -->
+      <section class="view" id="view-waitlist" data-view="waitlist" aria-labelledby="waitlist-title" hidden>
+        <header class="page-header">
+          <div>
+            <h1 class="page-title" id="waitlist-title" tabindex="-1">Waitlist</h1>
+            <p class="page-subtitle" id="waitlist-summary"></p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-secondary" data-action="open-add">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              Add customer
+            </button>
+            <button type="button" class="btn btn-primary" data-action="call-next">Call next</button>
+          </div>
+        </header>
+
+        <section class="list-section" aria-labelledby="wl-called-title">
+          <h2 class="section-title" id="wl-called-title">Called <span class="count" id="wl-called-count">0</span></h2>
+          <div id="wl-called"></div>
+        </section>
+
+        <section class="list-section" aria-labelledby="wl-waiting-title">
+          <h2 class="section-title" id="wl-waiting-title">Waiting <span class="count" id="wl-waiting-count">0</span></h2>
+          <div id="wl-waiting"></div>
+        </section>
+      </section>
+
+      <!-- History -->
+      <section class="view" id="view-history" data-view="history" aria-labelledby="history-title" hidden>
+        <header class="page-header">
+          <div>
+            <h1 class="page-title" id="history-title" tabindex="-1">History</h1>
+            <p class="page-subtitle">Customers who were seated or cancelled.</p>
+          </div>
+        </header>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="history-date">Day</label>
+            <select id="history-date" class="input"></select>
+          </div>
+          <div class="segmented" role="group" aria-label="Filter history by status" id="history-filters">
+            <button type="button" class="segment" data-filter="all" aria-pressed="true">All <span class="count" data-count="all">0</span></button>
+            <button type="button" class="segment" data-filter="seated" aria-pressed="false">Seated <span class="count" data-count="seated">0</span></button>
+            <button type="button" class="segment" data-filter="cancelled" aria-pressed="false">Cancelled <span class="count" data-count="cancelled">0</span></button>
+          </div>
+        </div>
+
+        <div class="card card-flush" id="history-content"></div>
+      </section>
+
+      <!-- Settings -->
+      <section class="view" id="view-settings" data-view="settings" aria-labelledby="settings-title" hidden>
+        <header class="page-header">
+          <div>
+            <h1 class="page-title" id="settings-title" tabindex="-1">Settings</h1>
+            <p class="page-subtitle">Settings and data are stored in this browser only.</p>
+          </div>
+        </header>
+
+        <div class="settings-grid">
+          <section class="card" aria-labelledby="settings-general-title">
+            <h2 class="card-title" id="settings-general-title">Restaurant</h2>
+            <form id="settings-form" class="form" novalidate>
+              <div class="field">
+                <label for="set-restaurant">Restaurant name</label>
+                <input id="set-restaurant" name="restaurantName" class="input" type="text" maxlength="60" autocomplete="organization" aria-describedby="set-restaurant-error" required>
+                <p class="field-error" id="set-restaurant-error"></p>
+              </div>
+              <div class="field">
+                <label for="set-turnover">Average table turnover (minutes)</label>
+                <input id="set-turnover" name="turnoverMinutes" class="input" type="number" inputmode="numeric" min="1" max="120" step="1" aria-describedby="set-turnover-hint set-turnover-error" required>
+                <p class="field-hint" id="set-turnover-hint">Estimated wait = parties ahead × this value. A simple rule of thumb, not a prediction.</p>
+                <p class="field-error" id="set-turnover-error"></p>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save settings</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="card" aria-labelledby="settings-data-title">
+            <h2 class="card-title" id="settings-data-title">Data</h2>
+            <div class="data-row">
+              <div>
+                <h3 class="data-title">Demo data</h3>
+                <p class="muted">Replace today's queue with 10 fictional customers in every status.</p>
+              </div>
+              <button type="button" class="btn btn-secondary" data-action="load-demo">Load demo data</button>
+            </div>
+            <div class="data-row">
+              <div>
+                <h3 class="data-title">Clear data</h3>
+                <p class="muted">Permanently remove all QBite customers, history and settings from this browser.</p>
+              </div>
+              <button type="button" class="btn btn-danger" data-action="clear-data">Clear data</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ============ Customer-facing view ============ -->
+  <div class="customer-screen" id="customer-screen" hidden>
+    <header class="cv-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span class="brand-name">QBite</span>
+      </div>
+      <a class="cv-back" href="#dashboard">Staff dashboard</a>
+    </header>
+    <main class="cv-main" id="cv-main" tabindex="-1">
+      <p class="cv-restaurant" id="cv-restaurant"></p>
+      <div id="cv-content" aria-live="polite"></div>
+      <form class="cv-lookup" id="cv-lookup" novalidate>
+        <label for="cv-number">Check your place in line</label>
+        <div class="cv-lookup-row">
+          <input id="cv-number" class="input" type="text" inputmode="numeric" autocomplete="off" placeholder="Queue number, e.g. 7" aria-describedby="cv-number-error">
+          <button type="submit" class="btn btn-primary">Check</button>
+        </div>
+        <p class="field-error" id="cv-number-error"></p>
+      </form>
+    </main>
+  </div>
+
+  <!-- ============ Add customer dialog ============ -->
+  <dialog class="dialog" id="add-dialog" aria-labelledby="add-title">
+    <form id="add-form" class="form" novalidate>
+      <div class="dialog-head">
+        <h2 id="add-title">Add customer</h2>
+        <button type="button" class="icon-btn" data-action="close-add" aria-label="Close">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <div class="field">
+          <label for="add-name">Customer name</label>
+          <input id="add-name" name="customerName" class="input" type="text" maxlength="60" autocomplete="off" aria-describedby="add-name-error" required>
+          <p class="field-error" id="add-name-error"></p>
+        </div>
+        <div class="field">
+          <label for="add-phone">Phone number</label>
+          <input id="add-phone" name="phone" class="input" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="e.g. 98765 43210" aria-describedby="add-phone-error" required>
+          <p class="field-error" id="add-phone-error"></p>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="add-party">Party size</label>
+            <input id="add-party" name="partySize" class="input" type="number" inputmode="numeric" min="1" max="20" step="1" aria-describedby="add-party-error" required>
+            <p class="field-error" id="add-party-error"></p>
+          </div>
+          <div class="field">
+            <label for="add-pref">Table preference</label>
+            <select id="add-pref" name="tablePreference" class="input" aria-describedby="add-pref-error" required></select>
+            <p class="field-error" id="add-pref-error"></p>
+          </div>
+        </div>
+        <p class="form-note" id="add-estimate"></p>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn btn-ghost" data-action="close-add">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add to queue</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ============ Confirmation dialog ============ -->
+  <dialog class="dialog dialog-sm" id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+    <form method="dialog">
+      <div class="dialog-body">
+        <h2 id="confirm-title"></h2>
+        <p id="confirm-message" class="muted"></p>
+      </div>
+      <div class="dialog-foot">
+        <button type="submit" class="btn btn-ghost" value="cancel" id="confirm-cancel" autofocus></button>
+        <button type="submit" class="btn btn-danger" value="confirm" id="confirm-ok"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
