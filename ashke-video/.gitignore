@@ -1,0 +1,4 @@
+node_modules/
+out/
+public/song.mp3
+*.mp4
